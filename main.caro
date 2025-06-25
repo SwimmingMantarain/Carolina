@@ -1,0 +1,14 @@
+#include "beans.caroh"
+
+int main() {
+    int x = 0;
+    char y = 'c';
+    float z = 2.0;
+    double d = 4;
+    beans();
+    return 0;
+};
+
+void beans() {
+    printf("Beans");
+}
