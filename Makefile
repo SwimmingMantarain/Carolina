@@ -1,20 +1,24 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-RM = rm -f
-TARGET = caro
-SRCS = main.c lex.c
-OBJS = $(SRCS:.c=.o)
-HEAD = lex.h
+CC := gcc
+CFLAGS := -Wall -Wextra -Werror
+RM := rm -fr # remove da french
+TARGET := caro
+SRC_DIR := src
+BUILD_DIR := build
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
-default: $(TARGET)
+.PHONY: all clean default
+
+default: all
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
 
-%.o: %.c $(HEAD)
-	$(CC) -c $<
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(TARGET) $(OBJS)
+	$(RM) $(TARGET) $(BUILD_DIR)
