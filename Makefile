@@ -1,13 +1,20 @@
 CC = gcc
-CFLAGS = -g
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
+TARGET = caro
+SRCS = main.c lex.c
+OBJS = $(SRCS:.c=.o)
+HEAD = lex.h
 
-default: all
+default: $(TARGET)
 
-all: main
+all: $(TARGET)
 
-main: main.c
-	$(CC) $(CFLAGS) -o caro main.c
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+
+%.o: %.c $(HEAD)
+	$(CC) -c $<
 
 clean:
-	$(RM) caro
+	$(RM) $(TARGET) $(OBJS)

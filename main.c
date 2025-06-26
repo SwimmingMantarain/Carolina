@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "lex.h"
 
 #define VERSION "V0.0.1"
 
@@ -12,28 +13,25 @@ void print_usage() {
 }
 
 int main(int argc, char* argv[]) {
-	// Declare input and output files
 	char *ifile;
-	char *ofile;
+	//char *ofile;
 
 
 	if (argc == 1) {
-		// Print usage if no arguments passed
 		print_usage();
 	} else {
-		// For now get the input and output file names, will be changed later
 		ifile = argv[argc - 2];
-		ofile = argv[argc - 1];
-		printf("Input: %s, Output: %s\n", ifile, ofile);
+		//ofile = argv[argc - 1];
 
-		// Open input file
 		FILE *file = fopen(ifile, "r");
 		
 		if (file == NULL) {
 			perror("Error opening file!\n");
+		} else {
+			lexify(file);
+			fclose(file);
 		};
 	};
-
 	return 0;
 }
 
