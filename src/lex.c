@@ -1,30 +1,37 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-typedef enum {
-	TOKEN_IDENTIFIER,
-	TOKEN_NUMBER,
-	TOKEN_STRING,
-	TOKEN_OPERATOR,
-	TOKEN_PUNCTUATION,
-	TOKEN_KEYWORD,
-	TOKEN_EOF,
-	TOKEN_UNKNOWN
-} TTYPE;
+char* read_file(const char* filename, size_t* out_size) {
+	FILE* file = fopen(filename, "rb");
 
-typedef struct {
-	TTYPE type;
-	char* value;
-} Token;
+	if (!file) return NULL;
 
-Token create_token(TTYPE type, char* value) {
-	Token token = { type, value };
-	return token;
+	fseek(file, 0, SEEK_END);
+	size_t size = ftell(file);
+	rewind(file);
+
+	char* buffer = malloc(size + 1); // +1 for NULL terminator
+	if (!buffer) { fclose(file); return NULL; }
+
+	fread(buffer, 1, size, file);
+
+	buffer[size] = '\0'; // Add null terminator
+	
+	fclose(file); // copy pasta
+	
+	if (out_size) *out_size = size;
+
+	return buffer;
 };
+
 
 void lexify(FILE *file) {
 	char ch;
 	while ((ch = fgetc(file)) != EOF) {
-		putchar(ch);
+		switch (ch) {
+			default:
+				
+		}
 	};
 
 
