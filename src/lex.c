@@ -25,14 +25,16 @@ char* read_file(const char* filename, size_t* out_size) {
 };
 
 
-void lexify(FILE *file) {
-	char ch;
-	while ((ch = fgetc(file)) != EOF) {
-		switch (ch) {
-			default:
-				
-		}
-	};
+void lexify(const char* filename) {
+	size_t file_size = 0;
+	
+	char* file_buffer = read_file(filename, &file_size);
 
+	if (file_buffer) {
+		printf("File size: %zu\n", file_size);
 
+		free(file_buffer);
+	} else {
+		perror("Error reading file!");
+	}
 }

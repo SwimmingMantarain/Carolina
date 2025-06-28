@@ -1,6 +1,6 @@
 #ifndef LEX_H_
 #define LEX_H_
 
-void lexify(FILE *file);
+void lexify(const char* filename);
 
 #endif

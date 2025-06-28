@@ -13,24 +13,11 @@ void print_usage() {
 }
 
 int main(int argc, char* argv[]) {
-	char *ifile;
-	//char *ofile;
-
-
 	if (argc == 1) {
 		print_usage();
 	} else {
-		ifile = argv[argc - 2];
-		//ofile = argv[argc - 1];
+		lexify(argv[argc - 2]);
 
-		FILE *file = fopen(ifile, "r");
-		
-		if (file == NULL) {
-			perror("Error opening file!\n");
-		} else {
-			lexify(file);
-			fclose(file);
-		};
 	};
 	return 0;
 }
