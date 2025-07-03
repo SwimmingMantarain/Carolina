@@ -14,5 +14,5 @@ func main() {
 
 	tokens := lex.Lex(*inputFilePtr)
 
-	fmt.Println(tokens[:20])
+	fmt.Println(tokens)
 }

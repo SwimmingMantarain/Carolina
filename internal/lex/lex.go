@@ -166,7 +166,7 @@ func Lex(filename string) []Token {
 					} else {
 						tokens = append(tokens, Token{Type: IDENT, Line: lineNum, Col: colNum + 1, Value: ident})
 					}
-					colNum += len(ident)
+					colNum += len(ident) - 1
 				} else if isDigit(byte(runes[colNum])) {
 					num := readChars(runes, colNum)
 					tokens = append(tokens, Token{Type: INT, Line: lineNum, Col: colNum + 1, Value: num})
