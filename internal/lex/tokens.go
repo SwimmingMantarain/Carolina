@@ -11,14 +11,15 @@ const (
 	COM_BLOCK_END   = "*/"
 
 	// KEYWORDS
-	IF     = "if"
-	ELSE   = "else"
-	FOR    = "for"
-	RETURN = "return"
-	FUNC   = "func"
-	VAR    = "var"
-	TRUE   = "true"
-	FALSE  = "false"
+	IF       = "if"
+	ELSE     = "else"
+	FOR      = "for"
+	RETURN   = "return"
+	FUNC     = "func"
+	VAR      = "var"
+	TRUE     = "true"
+	FALSE    = "false"
+	INT_TYPE = "int"
 
 	// Operators
 	ADD    = "+"
@@ -62,6 +63,7 @@ var Keywords = map[string]string{
 	"if":     IF,
 	"else":   ELSE,
 	"return": RETURN,
+	"int":    INT_TYPE,
 }
 
 type Token struct {

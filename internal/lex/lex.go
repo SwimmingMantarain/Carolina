@@ -123,6 +123,7 @@ func Lex(filename string) []Token {
 			case '<':
 				if checkNextChar(runes, colNum, '=') {
 					tokens = append(tokens, Token{Type: LTE, Line: lineNum, Col: colNum + 1})
+					colNum++
 				} else {
 					tokens = append(tokens, Token{Type: LT, Line: lineNum, Col: colNum + 1})
 				}
@@ -170,7 +171,7 @@ func Lex(filename string) []Token {
 				} else if isDigit(byte(runes[colNum])) {
 					num := readChars(runes, colNum)
 					tokens = append(tokens, Token{Type: INT, Line: lineNum, Col: colNum + 1, Value: num})
-					colNum += len(num)
+					colNum += len(num) - 1
 				} else if isAmericanSpace(runes[colNum]) {
 					// dunno
 				} else {

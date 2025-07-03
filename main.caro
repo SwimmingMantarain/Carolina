@@ -1,5 +1,5 @@
 func add(x, y) -> int {
-    var res-ult := x + y
+    var result := x + y
     if result == 10 {
         return true
     } else {
