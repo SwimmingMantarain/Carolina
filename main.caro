@@ -7,15 +7,13 @@ func add(x, y) -> int {
     }
 }
 
-for i := 0; i < 5; i = i + 1 {
+// Single line comment
+/*
+	multiline comment
+*/
+
+for i := 0; i < 5; i++ {
     add(i, i * 2)
-}
-
-var arr := [1, 2, 3]
-var obj := { a: 1, b: 2 }
-
-if arr[0] != 1 {
-    return false
 }
 
 var flag := true

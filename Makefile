@@ -1,12 +1,5 @@
-BINARY=caro
-CMD=./cmd/caro
+.PHONY: build
 
 build:
-	go build -o $(BINARY) $(CMD)
-
-run: build
-	./$(BINARY)
-
-clean:
-	rm -f $(BINARY)
-
+	cargo build
+	cp target/debug/caro ./caro
