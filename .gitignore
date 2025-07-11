@@ -1,9 +1,9 @@
 caro
-!cmd/*
-.vscode/
-.downloads/
-
 
 # Added by cargo
 
 /target
+
+# Added by aider
+
+.aider*
