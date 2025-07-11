@@ -53,3 +53,15 @@ isnice := if nice == 69 true, false
 // First value is returned if true, second if false
 ```
 
+## Boolean Logic
+```caro
+// Boolean Operators
+x && y // AND
+x || y // OR
+x <= y // Less than or equal to
+x == y // Equal to
+x != y // Not equal to
+x > y  // Greater than
+x < y  // Less than
+x >= y // Greater than or equal to
+```

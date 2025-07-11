@@ -1,22 +1,35 @@
-func add(x, y) -> int {
-    var result := x + y
-    if result == 10 {
-        return true
-    } else {
-        return false
-    }
+const VERSION := "V0.69"; // Type inferred as `str`
+const SUB_VER_NUM: int = 420; // Same as below
+
+var nice: int; // Declare, but don't define
+nice := 69; // Type inferred as `int`
+nicer: int = 420; // Explicit type
+
+nice, nicer := 69, "420"; // Type inferred as `int` & `str`
+
+func add(x: int, y: int) -> int {
+    return x + y;
 }
 
-// Single line comment
-/*
-	multiline comment
-*/
+var result: int;
+result = add(42, 27);
+io.print("This is nice: %\n", result);
 
-for i := 0; i < 5; i++ {
-    add(i, i * 2)
+if !nice {
+    io.print("Not nice! :(\n");
+} else {
+    io.print("%, Nice! :)\n", nice);
 }
 
-var flag := true
-if !flag {
-    return false
-}
+isnice := if nice == 69 true, false
+// First value is returned if true, second if false
+
+x && y // AND
+x || y // OR
+x <= y // Less than or equal to
+x == y // Equal to
+x != y // Not equal to
+x > y  // Greater than
+x < y  // Less than
+x >= y // Greater than or equal to
+
