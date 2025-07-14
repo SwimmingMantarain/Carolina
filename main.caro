@@ -1,5 +1,10 @@
+/*
+	Test file for lexer
+*/
+
 const VERSION := "V0.69"; // Type inferred as `str`
 const SUB_VER_NUM: int = 420; // Same as below
+const A := 'A';
 
 var nice: int; // Declare, but don't define
 nice := 69; // Type inferred as `int`
@@ -32,4 +37,3 @@ x != y // Not equal to
 x > y  // Greater than
 x < y  // Less than
 x >= y // Greater than or equal to
-
