@@ -1,9 +1,3 @@
-caro
+.zig-cache
+zig-out
 
-# Added by cargo
-
-/target
-
-# Added by aider
-
-.aider*
