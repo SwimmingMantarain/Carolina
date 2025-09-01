@@ -5,22 +5,30 @@ const GDTEntry = mod.GDTEntry;
 const GDTPtr = mod.GDTPtr;
 const createGDT = mod.createGDT;
 
-const ALIGN = 1 << 0;
-const MEMINFO = 1 << 1;
-const MAGIC = 0x1BADB002;
-const FLAGS = ALIGN | MEMINFO;
+const MB2_MAGIC  = 0xE85250D6;
+const ARCH_I386  = 0; 
+const MB2_END    = 0;
+const TAG_END_SZ = 8;
 
 const MultibootHeader = packed struct {
-    magic: i32 = MAGIC,
-    flags: i32,
-    checksum: i32,
-    padding: u32 = 0,
+    magic: u32 = MAGIC,
+    architecture: u32 = ARCH_I386,
+    header_length: u32,
+    checksum: u32,
+    // Optional Tags
+    end_type: u16 = MB2_END,
+    end_flags: u16 = 0,
+    end_size: u32 = TAG_END_SZ,
 };
 
-export var multiboot: MultibootHeader align(4) linksection(".multiboot") = .{
-    .flags = FLAGS,
-    .checksum = -(MAGIC + FLAGS),
-};
+fn makeHeader() MB2Header {
+    var h = MB2Header{ .header_length = @sizeOf(MB2Header), .checksum = 0 };
+    const sum: u64 = @as(u64, h.magic) + h.architecture + h.header_length;
+    h.checksum = @as(u32, 0) - @as(u32, @intCast(sum));
+    return h;
+}
+
+export var multiboot2_header: MB2Header align(8) linksection(".multiboot2") = makeHeader();
 
 var stack_bytes: [16*1024]u8 align(16) linksection(".bss") = undefined;
 var gdt: [3]GDTEntry align(8) linksection(".bss") = undefined;
