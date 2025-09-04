@@ -1,4 +1,3 @@
-// Source: https://github.com/Arnau478/ytos/blob/master/kernel/src/main.zig
 const std = @import("std");
 
 const kernel_config = .{
@@ -39,12 +38,23 @@ pub fn build(b: *std.Build) void {
 
     const kernel_optimize = b.standardOptimizeOption(.{});
 
-    const kernel = b.addExecutable(.{
-        .name = "kernel",
+    const kernel_module = b.createModule(.{
         .root_source_file = b.path("kernel/src/main.zig"),
         .target = b.resolveTargetQuery(target),
         .optimize = kernel_optimize,
-        .code_model = .kernel,
+    });
+
+    kernel_module.addIncludePath(b.path("limine"));
+
+    const limine_zig = b.dependency("limine_zig", .{ .api_revision = 3 });
+    const limine_module = limine_zig.module("limine");
+
+    kernel_module.addImport("limine", limine_module);
+
+    const kernel = b.addExecutable(.{
+        .name = "kernel",
+        .root_module = kernel_module,
+        .code_model = .large,
     });
 
     kernel.setLinkerScript(b.path("kernel/linker.ld"));

@@ -1,16 +1,13 @@
-const limine = @cImport({
-    @cInclude("../../limine/limine.h");
-});
+const framebuffer = @import("./framebuffer.zig");
 
 inline fn hlt() void {
-    asm volatile("hlt" : : );
+    asm volatile ("hlt");
 }
 
 export fn _start() callconv(.C) noreturn {
-    if (limine.terminal_request.response != null and limine.terminal_request.response.terminals_count > 0) {
-        const term = limine.terminal_request.response.terminals[0];
-        limine.terminal_write(term, "Hello from Carolina!", 16);
-    }
+    framebuffer.init();
 
-    while (true) { hlt(); }
+    while (true) {
+        hlt();
+    }
 }
