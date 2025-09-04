@@ -1,43 +1,16 @@
-inline fn inb(port: u16) u8 {
-    return asm volatile ("inb %[port], %[result]"
-        : [result] "={al}" (-> u8),
-        : [port] "N{dx}" (port),
-    );
-}
-
-inline fn outb(port: u16, data: u8) void {
-    asm volatile ("outb %[data], %[port]"
-        :
-        : [data] "{al}" (data),
-          [port] "N{dx}" (port),
-    );
-}
+const limine = @cImport({
+    @cInclude("../../limine/limine.h");
+});
 
 inline fn hlt() void {
     asm volatile("hlt" : : );
 }
 
 export fn _start() callconv(.C) noreturn {
-    outb(0xe9, 'H');
-    outb(0xe9, 'e');
-    outb(0xe9, 'l');
-    outb(0xe9, 'l');
-    outb(0xe9, 'o');
-    outb(0xe9, ' ');
-    outb(0xe9, 'f');
-    outb(0xe9, 'r');
-    outb(0xe9, 'o');
-    outb(0xe9, 'm');
-    outb(0xe9, ' ');
-    outb(0xe9, 'C');
-    outb(0xe9, 'a');
-    outb(0xe9, 'r');
-    outb(0xe9, 'o');
-    outb(0xe9, 'l');
-    outb(0xe9, 'i');
-    outb(0xe9, 'n');
-    outb(0xe9, 'a');
-    outb(0xe9, '!');
+    if (limine.terminal_request.response != null and limine.terminal_request.response.terminals_count > 0) {
+        const term = limine.terminal_request.response.terminals[0];
+        limine.terminal_write(term, "Hello from Carolina!", 16);
+    }
 
-    while (true) {}
+    while (true) { hlt(); }
 }
