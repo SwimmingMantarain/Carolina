@@ -1,5 +1,8 @@
 const limine = @import("limine");
 const serial = @import("./serial.zig");
+const psf = @import("./psf.zig");
+
+const font = psf.load_font();
 
 export var framebuffer_request: limine.FramebufferRequest linksection(".limine_requests") = .{};
 var framebuffer: *limine.Framebuffer = undefined;
@@ -78,6 +81,28 @@ pub fn draw_rect(x1: u32, y1: u32, x2: u32, y2: u32, color: u32, fill: bool) voi
         draw_line(x1, y1, x2, y1, color); // top
         draw_line(x2, y1, x2, y2, color); // right
         draw_line(x1, y2, x2, y2, color); // bottom
+    }
+
+}
+
+pub fn draw_char(char: u8, x: u32, y: u32, fg: u32, bg: u32) void {
+    const char_font = font.data[char * font.char_height..(char + 1) + font.char_height];
+
+    var row: u8 = 0;
+
+    while (row <= 7) : (row += 1) {
+        var col: u8 = 0;
+        while (col < 8) : (col += 1) {
+            const byte = char_font[row];
+            const bit = byte >> @intCast(7 - col);
+            const on = bit & 0b00000001;
+
+            if (on == 1) {
+                draw_pixel(x + col, y + row, fg);
+            } else {
+                draw_pixel(x + col, y + row, bg);
+            }
+        }
     }
 
 }

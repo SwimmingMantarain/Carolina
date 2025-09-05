@@ -12,6 +12,9 @@ pub inline fn outb(port: u16, data: u8) void {
           [port] "N{dx}" (port),
     );
 }
+pub fn outbnl(port: u16) void {
+    outb(port, 0x0A);
+}
 
 pub fn outNum(port: u16, num: u64) void {
     var buffer: [20]u8 = undefined; // Enough for decimal u32 digits

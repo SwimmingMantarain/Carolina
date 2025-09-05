@@ -14,6 +14,8 @@ export fn _start() callconv(.C) noreturn {
     framebuffer.draw_rect(300, 300, 450, 450, 0x00ff00, true);
     framebuffer.draw_rect(500, 300, 650, 450, 0x0000ff, true);
 
+    framebuffer.draw_char('A', 1000, 600, 0xff0000, 0x0f0f0f);
+
     while (true) {
         hlt();
     }
