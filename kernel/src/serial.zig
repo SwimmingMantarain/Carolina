@@ -24,17 +24,27 @@ pub fn outNum(port: u16, num: u64) void {
 
     var n = num;
 
-    while (n != 0) : (void) {
+    while (n != 0) {
         i -= 1;
         const digit64 = n % 10; // Always between 0 - 9
-        const digit8: u8 = 0xFFFFFFFFFFFFFF00 & digit64; 
+        var digit8: u8 = 0;
 
         switch (digit64) {
-            0 => digit8 = 0,
+            0 => digit8 = '0',
+            1 => digit8 = '1',
+            2 => digit8 = '2',
+            3 => digit8 = '3',
+            4 => digit8 = '4',
+            5 => digit8 = '5',
+            6 => digit8 = '6',
+            7 => digit8 = '7',
+            8 => digit8 = '8',
+            9 => digit8 = '9',
+            else => digit8 = '0',
         }
 
 
-        buffer[i] = digit + '0';
+        buffer[i] = digit8;
         n /= 10;
     }
 

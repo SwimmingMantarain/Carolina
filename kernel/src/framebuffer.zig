@@ -17,12 +17,19 @@ pub fn init() void {
 
     const framebuffer_width = framebuffer.width;
     const framebuffer_height = framebuffer.height;
+    const framebuffer_pitch = framebuffer.pitch;
+    const framebuffer_bpp = framebuffer.bpp;
 
-    serial.outNum(0x09, framebuffer_width);
-    serial.outNum(0x09, framebuffer_height);
+    serial.outNum(0xe9, framebuffer_width);
+    serial.outb(0xe9, 'x');
+    serial.outNum(0xe9, framebuffer_height);
+    serial.outb(0x09, ' ');
+    serial.outNum(0xe9, framebuffer_pitch);
+    serial.outb(0xe9, ' ');
+    serial.outNum(0xe9, framebuffer_bpp);
 
-    for (0..1000) |i| {
+    for (0..framebuffer_width) |i| {
         const fb_ptr: [*]volatile u32 = @ptrCast(@alignCast(framebuffer.address));
-        fb_ptr[i * (framebuffer.pitch / 4) + i] = 0xffffff;
+        fb_ptr[i] = 0x00ff00;
     }
 }
