@@ -24,20 +24,41 @@ pub fn draw_pixel(x: u32, y: u32, color: u32) void {
 }
 
 pub fn draw_line(x1: u32, y1: u32, x2: u32, y2: u32, color: u32) void {
-    const slope = 2 * (y2 - y1);
-    var slope_error = slope - (x2 - x1);
+    const dx = @as(i32, @intCast(@abs(x2 - x1)));
+    const dy = -@as(i32, @intCast(@abs(y2 - y1)));
 
-    var xn = x1;
-    var yn = y1;
+    var sx: i32 = 0;
+    var sy: i32 = 0;
 
-    while (xn <= x2) : (xn += 1) {
-        draw_pixel(xn, yn, color);
+    if (x1 < x2) {
+        sx = 1;
+    } else {
+        sx = -1;
+    }
 
-        slope_error += slope;
+    if (y1 < y2) {
+        sy = 1;
+    } else {
+        sy = -1;
+    }
 
-        if (slope_error >= 0) {
-            yn += 1;
-            slope_error -= 2 * (x2 - x1);
+    var err = dx + dy;
+    var xn = @as(i32, @intCast(x1));
+    var yn = @as(i32, @intCast(y1));
+
+    while (xn != x2 or yn != y2) {
+        draw_pixel(@as(u32, @intCast(xn)), @as(u32, @intCast(yn)), color);
+
+        const err2 = 2 * err;
+
+        if (err2 >= dy) {
+            err += dy;
+            xn += sx;
+        }
+
+        if (err2 <= dx) {
+            err += dx;
+            yn += sy;
         }
     }
 }

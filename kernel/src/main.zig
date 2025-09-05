@@ -7,11 +7,11 @@ inline fn hlt() void {
 export fn _start() callconv(.C) noreturn {
     framebuffer.init();
 
+    framebuffer.draw_line(100, 100, 200, 100, 0x00ff00);
     framebuffer.draw_line(100, 100, 100, 200, 0x00ff00);
-    framebuffer.draw_line(100, 100, 200, 99, 0x00ff00);
+    framebuffer.draw_line(0, 0, 200, 200, 0x00ff00);
 
-
-    //framebuffer.draw_rect(200, 250, 500, 600, 0xff00ff);
+    framebuffer.draw_rect(300, 300, 450, 450, 0x00ff00);
 
     while (true) {
         hlt();
