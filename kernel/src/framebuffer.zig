@@ -63,11 +63,23 @@ pub fn draw_line(x1: u32, y1: u32, x2: u32, y2: u32, color: u32) void {
     }
 }
 
-pub fn draw_rect(x1: u32, y1: u32, x2: u32, y2: u32, color: u32) void {
-    draw_line(x1, y1, x1, y2, color); // left
-    draw_line(x1, y1, x2, y1, color); // top
-    draw_line(x2, y1, x2, y2, color); // right
-    draw_line(x1, y2, x2, y2, color); // bottom
+pub fn draw_rect(x1: u32, y1: u32, x2: u32, y2: u32, color: u32, fill: bool) void {
+    if (fill) {
+        var yn = y1;
+
+        while (yn <= y2) : (yn += 1) {
+            var xn = x1;
+            while (xn <= x2) : (xn += 1) {
+                draw_pixel(xn, yn, color);
+            }
+        }
+    } else {
+        draw_line(x1, y1, x1, y2, color); // left
+        draw_line(x1, y1, x2, y1, color); // top
+        draw_line(x2, y1, x2, y2, color); // right
+        draw_line(x1, y2, x2, y2, color); // bottom
+    }
+
 }
 
 pub fn init() void {
