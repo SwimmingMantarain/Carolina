@@ -16,6 +16,27 @@ pub fn outbnl(port: u16) void {
     outb(port, 0x0A);
 }
 
+pub fn outStr(port: u16, str: []const u8) void {
+    const str_len = str.len;
+
+    var i: u32 = 0;
+
+    while (i < str_len) : (i += 1) {
+        outb(port, str[i]);
+    }
+}
+
+pub fn outNumArr(port: u16, num_arr: []const u8) void {
+    const arr_len = num_arr.len;
+
+    var i: u32 = 0;
+
+    while (i < arr_len) : (i += 1) {
+        outNum(port, num_arr[i]);
+        outbnl(port);
+    }
+}
+
 pub fn outNum(port: u16, num: u64) void {
     var buffer: [20]u8 = undefined; // Enough for decimal u32 digits
     var i: usize = buffer.len;

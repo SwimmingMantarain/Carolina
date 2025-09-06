@@ -1,23 +1,40 @@
-const font_data = @embedFile("./font.psf");
+const std = @import("std");
 
-const PSF1Header = packed struct {
-    magic: u16,
-    mode: u8,
-    charsize: u8,
+const font_data = @embedFile("font.psf");
+
+const PSF2Header = packed struct {
+    magic: u32,        // 0x864AB572
+    version: u32,      // 0 for PSF2
+    headersize: u32,   // Size of PSF2Header (32)
+    flags: u32,        // 0 if no Unicode table
+    numglyph: u32,     // Number of glyphs
+    bytesperglyph: u32, // Number of bytes per glyph
+    height: u32,       // Height in pixels
+    width: u32,        // Width in pixels
 };
 
-pub const PSF1Font = struct {
+pub const PSF2Font = struct {
     data: []const u8,
-    char_height: u8,
-    char_width: u8,
+    char_height: u32,
+    char_width: u32,
+    numglyph: u32,
+    bytesperglyph: u32,
 };
 
-pub fn load_font() PSF1Font {
-    const header = @as(*const PSF1Header, @ptrCast(@alignCast(font_data.ptr))).*;
+pub fn load_font() PSF2Font {
+    const header = @as(*const PSF2Header, @ptrCast(@alignCast(font_data.ptr)));
+    
+    if (header.magic != 0x864AB572) {
+        @panic("Invalid PSF2 magic number");
+    }
 
-    return PSF1Font{
-        .data = font_data[4..], // Skip header
-        .char_height = header.charsize,
-        .char_width = 8,
+    const glyph_data = font_data[header.headersize..];
+    
+    return PSF2Font{
+        .data = glyph_data,
+        .char_height = header.height,
+        .char_width = header.width,
+        .numglyph = header.numglyph,
+        .bytesperglyph = header.bytesperglyph,
     };
 }

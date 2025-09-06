@@ -2,11 +2,11 @@ const limine = @import("limine");
 const serial = @import("./serial.zig");
 const psf = @import("./psf.zig");
 
-const font = psf.load_font();
 
 export var framebuffer_request: limine.FramebufferRequest linksection(".limine_requests") = .{};
 var framebuffer: *limine.Framebuffer = undefined;
 var fb_ptr: [*]volatile u32 = undefined;
+var font: psf.PSF2Font = undefined;
 
 fn get_framebuffer() *limine.Framebuffer {
     if (framebuffer_request.response) |framebuffer_response| {
@@ -86,29 +86,45 @@ pub fn draw_rect(x1: u32, y1: u32, x2: u32, y2: u32, color: u32, fill: bool) voi
 }
 
 pub fn draw_char(char: u8, x: u32, y: u32, fg: u32, bg: u32) void {
-    const char_font = font.data[char * font.char_height..(char + 1) + font.char_height];
-
-    var row: u8 = 0;
-
-    while (row <= 7) : (row += 1) {
-        var col: u8 = 0;
-        while (col < 8) : (col += 1) {
-            const byte = char_font[row];
-            const bit = byte >> @intCast(7 - col);
-            const on = bit & 0b00000001;
-
-            if (on == 1) {
-                draw_pixel(x + col, y + row, fg);
+    if (char >= font.numglyph) {
+        return; // Character not available in font
+    }
+    
+    const glyph_offset = char * font.bytesperglyph;
+    const glyph_data = font.data[glyph_offset..glyph_offset + font.bytesperglyph];
+    
+    var row: u32 = 0;
+    while (row < font.char_height) : (row += 1) {
+        const glyph_byte = glyph_data[row];
+        var bit: u3 = 0;
+        
+        while (bit < 7) : (bit += 1) {
+            const pixel_x = x + bit;
+            const pixel_y = y + row;
+            
+            if ((glyph_byte >> (7 - bit)) & 1 == 1) {
+                draw_pixel(pixel_x, pixel_y, fg);
             } else {
-                draw_pixel(x + col, y + row, bg);
+                draw_pixel(pixel_x, pixel_y, bg);
             }
         }
     }
+}
 
+pub fn draw_str(str: []const u8, x: u32, y: u32, fg: u32, bg: u32) void {
+    const str_len = str.len;
+
+    var i: u32 = 0;
+    while (i < str_len) : (i += 1) {
+        const char = str[i];
+
+        draw_char(char, (x + 7 * i), y, fg, bg);
+    }
 }
 
 pub fn init() void {
     framebuffer = get_framebuffer();
+    font = psf.load_font();
     fb_ptr = @ptrCast(@alignCast(framebuffer.address));
 
     const framebuffer_length = framebuffer.width * framebuffer.height;
