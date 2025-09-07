@@ -112,15 +112,15 @@ pub fn draw_char(char: u8, x: u32, y: u32, fg: u32, bg: u32) void {
 }
 
 const MAX_WIDTH = 1280;
-const MAX_HEIGHT = 720;
+const MAX_HEIGHT = 800;
 const MAX_CHARS = (MAX_WIDTH / 8) * (MAX_HEIGHT / 8);
 var chars_buf: [MAX_CHARS]u8 = [_]u8{0} ** MAX_CHARS;
 
 const Console = struct {
     bg: u32 = 0x000000,
     fg: u32 = 0x00ff00,
-    row: u32 = 0,
-    col: u32 = 0,
+    row: u64 = 0,
+    col: u64 = 0,
     chars: [MAX_CHARS]u8,
 
     const Self = @This();
@@ -130,10 +130,10 @@ const Console = struct {
         const chars_per_col = framebuffer.height / 8;
 
         var row: u32 = 0;
-        var col: u32 = 0;
         
-        while (row < chars_per_row) : (row += 1) {
-            while (col < chars_per_col) : (col += 1) {
+        while (row < chars_per_col) : (row += 1) {
+            var col: u32 = 0;
+            while (col < chars_per_row) : (col += 1) {
                 const char = self.chars[row * chars_per_row + col];
 
                 const x = col * 8;
@@ -153,40 +153,39 @@ const Console = struct {
         const chars_per_row = framebuffer.width / 8;
 
         while (i < str_len) : (i += 1) {
+            if (str[i] == '\n') {
+                self.row += 1;
+                self.col = 0;
+                continue;
+            }
+
             if (self.col >= chars_per_row) {
+                self.col = 0;
+                self.row += 1;
+            }
+
+            if (self.row >= chars_per_col) {
                 self.scroll();
-                self.col -= 1;
-            } else if (self.row > chars_per_col) {
-                self.row = 0;
-                self.col += 1;
-            } else if (str[i] == '\n') {
-                self.row = 0;
-                self.col += 1;
+                self.row = chars_per_col - 1;
             }
 
             self.chars[self.row * chars_per_row + self.col] = str[i];
+            self.col += 1;
         }
     }
 
     fn scroll(self: *Self) void {
         const chars_per_row = framebuffer.width / 8;
-        const chars_len = self.chars.len;
+        const total_chars = (framebuffer.width / 8) * (framebuffer.height / 8);
 
         var i: u32 = 0;
+        while (i < total_chars - chars_per_row) : (i += 1) {
+            self.chars[i] = self.chars[i + chars_per_row];
+        }
 
-        while (i < chars_per_row) : (i += 1) {
+        while (i < total_chars) : (i += 1) {
             self.chars[i] = 0;
         }
-
-        while (i < chars_len - chars_per_row) : (i += 1) {
-            self.chars[i - chars_per_row] = self.chars[i];
-        }
-
-        while (i < chars_len) : (i += 1) {
-            self.chars[i] = 0;
-        }
-
-
     }
 };
 
@@ -200,7 +199,13 @@ pub fn init() Console {
         fb_ptr[i] = 0x000000;
     }
 
-    return Console{
+    var console = Console{
         .chars = chars_buf,
-};
+    };
+
+    @memset(&console.chars, 0);
+
+    console.print("Hello, World from Carolina OS!\n\n");
+
+    return console;
 }

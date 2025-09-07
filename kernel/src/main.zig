@@ -7,8 +7,6 @@ inline fn hlt() void {
 export fn _start() callconv(.C) noreturn {
     var console = framebuffer.init();
 
-    console.print("Hello, World!");
-
     while (true) {
         console.render();
         hlt();
