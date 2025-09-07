@@ -111,29 +111,96 @@ pub fn draw_char(char: u8, x: u32, y: u32, fg: u32, bg: u32) void {
     }
 }
 
-pub fn draw_str(str: []const u8, x: u32, y: u32, fg: u32, bg: u32) void {
-    const str_len = str.len;
+const MAX_WIDTH = 1280;
+const MAX_HEIGHT = 720;
+const MAX_CHARS = (MAX_WIDTH / 8) * (MAX_HEIGHT / 8);
+var chars_buf: [MAX_CHARS]u8 = [_]u8{0} ** MAX_CHARS;
 
-    var i: u32 = 0;
-    while (i < str_len) : (i += 1) {
-        const char = str[i];
+const Console = struct {
+    bg: u32 = 0x000000,
+    fg: u32 = 0x00ff00,
+    row: u32 = 0,
+    col: u32 = 0,
+    chars: [MAX_CHARS]u8,
 
-        draw_char(char, (x + 7 * i), y, fg, bg);
+    const Self = @This();
+
+    pub fn render(self: Self) void {
+        const chars_per_row = framebuffer.width / 8;
+        const chars_per_col = framebuffer.height / 8;
+
+        var row: u32 = 0;
+        var col: u32 = 0;
+        
+        while (row < chars_per_row) : (row += 1) {
+            while (col < chars_per_col) : (col += 1) {
+                const char = self.chars[row * chars_per_row + col];
+
+                const x = col * 8;
+                const y = row * 8;
+
+                draw_char(char, x, y, self.fg, self.bg);
+            }
+        }
     }
-}
 
-pub fn init() void {
+    pub fn print(self: *Self, str: []const u8) void {
+        const str_len = str.len;
+
+        var i: u32 = 0;
+
+        const chars_per_col = framebuffer.height / 8;
+        const chars_per_row = framebuffer.width / 8;
+
+        while (i < str_len) : (i += 1) {
+            if (self.col >= chars_per_row) {
+                self.scroll();
+                self.col -= 1;
+            } else if (self.row > chars_per_col) {
+                self.row = 0;
+                self.col += 1;
+            } else if (str[i] == '\n') {
+                self.row = 0;
+                self.col += 1;
+            }
+
+            self.chars[self.row * chars_per_row + self.col] = str[i];
+        }
+    }
+
+    fn scroll(self: *Self) void {
+        const chars_per_row = framebuffer.width / 8;
+        const chars_len = self.chars.len;
+
+        var i: u32 = 0;
+
+        while (i < chars_per_row) : (i += 1) {
+            self.chars[i] = 0;
+        }
+
+        while (i < chars_len - chars_per_row) : (i += 1) {
+            self.chars[i - chars_per_row] = self.chars[i];
+        }
+
+        while (i < chars_len) : (i += 1) {
+            self.chars[i] = 0;
+        }
+
+
+    }
+};
+
+pub fn init() Console {
     framebuffer = get_framebuffer();
     font = psf.load_font();
     fb_ptr = @ptrCast(@alignCast(framebuffer.address));
 
     const framebuffer_length = framebuffer.width * framebuffer.height;
-
-    serial.outNum(0xe9, framebuffer.width);
-    serial.outb(0xe9, 'x');
-    serial.outNum(0xe9, framebuffer.height);
-
     for (0..framebuffer_length) |i| {      
         fb_ptr[i] = 0x000000;
     }
+
+    return Console{
+        .chars = chars_buf,
+};
 }
