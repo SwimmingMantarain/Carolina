@@ -1,4 +1,3 @@
-/* Source: https://github.com/Arnau478/ytos/blob/master/kernel/linker.ld */
 ENTRY(_start)
 
 PHDRS {
